@@ -1,0 +1,36 @@
+#include <stdlib.h>
+#include <string.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <netinet/ip.h>
+
+#define BUFFSZ 1024
+#define UDP_PORT 5005
+
+void main(void){
+  
+  struct sockaddr_in si;
+  int sock;
+  char buf[BUFFSZ];
+  
+  if( (sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1 )
+    perror("CLI:\tFailed to open socket"), exit(0);
+
+  memset( (char *) &si, 0, sizeof(struct sockaddr_in) );
+  si.sin_family = AF_INET;
+  si.sin_port = htons(UDP_PORT);
+  if( inet_aton("127.0.0.1", &(si.sin_addr) ) == 0)
+    printf("CLI:\tinet_aton failed\n"), exit(0);
+  
+  sprintf(buf, "This is packet\n");
+  if( sendto(sock, buf, BUFFSZ, 0, (struct sockaddr *) &si, 
+	     sizeof(struct sockaddr_in)) == -1)
+    perror("CLI:\tsendto Failed"), exit(0);
+  
+  close(sock);
+  return;
+}
