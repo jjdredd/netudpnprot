@@ -14,7 +14,8 @@
 void main(void){
   
   struct sockaddr_in si;
-  int sock, i, recvd, conf_msg;
+  int sock, i, recvd;
+  long int conf_msg;
   char buf[BUFFSZ];
   
   if( (sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1 )
@@ -43,7 +44,7 @@ void main(void){
 
   recvd = recvfrom(sock, &conf_msg, sizeof(conf_msg), 0, 
 		   (struct sockaddr *) &si, &i);
-  if( conf_msg == 0 ){
+  if( !conf_msg ){
     /* session started */
     printf("CLI:\tsession started\n");
 
